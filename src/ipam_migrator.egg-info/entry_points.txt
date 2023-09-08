@@ -1,0 +1,3 @@
+[console_scripts]
+ipam-migrator = ipam_migrator.ipam_migrator:main
+
