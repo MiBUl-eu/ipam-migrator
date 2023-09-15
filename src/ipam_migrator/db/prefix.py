@@ -38,6 +38,7 @@ class Prefix(Object):
     def __init__(self,
                  prefix_id,
                  prefix,
+                 mask,
                  is_pool=False,
                  description=None,
                  vlan_id=None, vrf_id=None):
@@ -54,6 +55,8 @@ class Prefix(Object):
 
         self.vlan_id = int(vlan_id) if vlan_id is not None else None
         self.vrf_id = int(vrf_id) if vrf_id is not None else None
+
+        self.mask=str(mask)
 
 
     def __str__(self):
@@ -82,4 +85,6 @@ class Prefix(Object):
 
             "vlan_id": self.vlan_id,
             "vrf_id": self.vrf_id,
+
+            "mask": self.mask
         }

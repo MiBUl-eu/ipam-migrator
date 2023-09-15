@@ -541,6 +541,7 @@ class NetBox(BaseBackend):
         for ip_address in ip_addresses.values():
             description = ip_address.description if ip_address.description is not None and ip_address.description != "null" else "empty"
             hostname = ip_address.hostname if ip_address.hostname is not None and ip_address.hostname != "null" else "empty"
+            mask = ip_address.mask
             
             # Initialize the status dictionary with a default value
             status = "active"
@@ -556,7 +557,7 @@ class NetBox(BaseBackend):
                 {"q": str(ip_address.address)},
                 {
                     "description": description,
-                    "address": str(ip_address.address),
+                    "address": str(ip_address.address) + "/" + str(mask),
                     "custom_fields": ip_address.custom_fields,
                     "vrf": vrfs_old_to_new[ip_address.vrf_id] if ip_address.vrf_id else None,
                     "dns_name": hostname if hostname else None,  # Include 'hostname' in the data dictionary
@@ -602,6 +603,7 @@ class NetBox(BaseBackend):
         return IPAddress(
             data["id"], # ip_address_id
             data["address"].split("/")[0], # address
+            mask=data["address"].split("/")[1], #only placeholder because mask attribute has to exist
             description=data["description"],
             hostname=hostname,  # Use 'hostname' here
             custom_fields=data["custom_fields"] if "custom_fields" in data else None,
@@ -618,6 +620,7 @@ class NetBox(BaseBackend):
         return Prefix(
             data["id"], # prefix_id
             data["prefix"], # prefix
+            mask=0, #only placeholder because mask attribute has to exist
             is_pool=data["is_pool"],
             description=data["description"],
             vlan_id=NetBox.object_id_get(data, "vlan"),

@@ -386,12 +386,12 @@ class PhpIPAM(BaseBackend):
 
         self.logger.info("Searching for IP addresses used in found prefixes...")
 
-        for prefix_id in prefixes.keys():
+        for prefix_id, prefix in prefixes.items():
             try:
                 for data in self.api_read("subnets", prefix_id, "addresses"):
                     i = data["id"]
-                    ip_addresses[i] = self.ip_address_get(data)
-                    self.logger.debug("found {}".format(ip_addresses[i]))
+                    ip_addresses[i] = self.ip_address_get(data, prefix.mask)
+                    self.logger.debug("found {}/{}".format(ip_addresses[i], prefix.mask))
 
             except APIReadError as err:
                 if err.api_message == "No addresses found":
@@ -557,6 +557,7 @@ class PhpIPAM(BaseBackend):
         return Prefix(
             data["id"], # prefix_id
             "{}/{}".format(data["subnet"], data["mask"]), # prefix
+            mask=data["mask"],
             description=data["description"],
             vlan_id=data["vlanId"],
             vrf_id=data["vrfId"],
@@ -587,7 +588,7 @@ class PhpIPAM(BaseBackend):
 
 
     @staticmethod
-    def ip_address_get(data):
+    def ip_address_get(data, mask):
         '''
         Get an IPAddress object from the given data dictionary.
         '''
@@ -600,10 +601,10 @@ class PhpIPAM(BaseBackend):
         if not hostname:  # If hostname is empty or None
           hostname = "empty"
 
-
         return IPAddress(
             data["id"], # address_id
             data["ip"], # address
+            mask=mask,
             description=description,
             hostname=hostname,
             # Unused:

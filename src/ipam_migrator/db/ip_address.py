@@ -37,6 +37,7 @@ class IPAddress(Object):
     def __init__(self,
                  address_id,
                  address,
+                 mask,
                  description=None,
                  custom_fields=None,
                  vrf_id=None,
@@ -56,6 +57,7 @@ class IPAddress(Object):
         # Grouping fields, in ascending order of scale.
         self.vrf_id = int(vrf_id) if vrf_id is not None else None
         self.hostname = str(hostname) if hostname is not None else None  # Add 'hostname' field
+        self.mask = str(mask)
 
     def __str__(self):
         '''
@@ -63,7 +65,7 @@ class IPAddress(Object):
         '''
 
         if self.description:
-            return "IP address {} with description '{}'".format(self.address, self.description)
+            return "IP address {}/{} with description '{}'".format(self.address, self.mask, self.description)
         return "IP address {}".format(self.address)
 
     def as_dict(self):
@@ -84,4 +86,6 @@ class IPAddress(Object):
 
             "vrf_id": self.vrf_id,
             "dns_name": sanitized_hostname,  # Include 'hostname' in the dictionary
+
+            "mask": self.mask
         }
