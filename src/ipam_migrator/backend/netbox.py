@@ -467,7 +467,7 @@ class NetBox(BaseBackend):
                 {"vid": vlan.vid},
                 {
                     "name": vlan.name,
-                    "description": vlan.description,
+                    "description": vlan.description if vlan.description is not None else "",
                     "vid": vlan.vid,
                 },
                 self.vlan_get,
@@ -506,7 +506,7 @@ class NetBox(BaseBackend):
                 "prefixes",
                 {"q": str(prefix.prefix)},
                 {
-                    "description": prefix.description,
+                    "description": prefix.description if prefix.description is not None else "",
                     "prefix": str(prefix.prefix),
                     "is_pool": prefix.is_pool,
                     "vlan": vlans_old_to_new[prefix.vlan_id] if prefix.vlan_id else None,
